@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace CapaEntidad
 {
-    public class Distrito
+    public class Sector
     {
-        public string idDistrito { set; get; }
-        public string descripcion { set; get; }
+        public int idSector {  get; set; }
+        public string nombre { get; set; }
+        public Ciudad oCiudad { get; set; }
     }
 }
