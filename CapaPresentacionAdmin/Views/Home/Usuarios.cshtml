@@ -52,7 +52,7 @@
             </div>
             <div class="modal-body">
 
-                <input id="txtid" type="" value="0"/>
+                <input id="txtid" type="hidden" value="0"/>
 
                 <div class="row g-2">
                     <div class="col-sm-6">
@@ -209,7 +209,7 @@
                     contentType: "application/json; charset=utf-8",
                     success: function (data) {
 
-                        debugger;
+                        
 
                         if (data.resultado) {
                             tabladata.row(usuarioseleccionado).remove().draw();

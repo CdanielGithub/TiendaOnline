@@ -1,5 +1,5 @@
 ﻿using CapaEntidad;
-using MySql.Data.MySqlClient;
+using System.Data.Sql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,18 +20,18 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
 
                 {
-                    MySqlDataReader Variable = null;
+                   // SqlDataReader Variable = null;
                     string query = "select idCategoria, descripcion, activo from categoria";
 
-                    MySqlCommand cmd = new MySqlCommand(query, oconexion);
+                    SqlCommand cmd = new SqlCommand(query, oconexion);
                     cmd.CommandType = CommandType.Text;
 
                     oconexion.Open();
 
-                    using (MySqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
@@ -63,14 +63,14 @@ namespace CapaDatos
             mensaje = string.Empty;
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_RegistrarCategoria", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_RegistrarCategoria", oconexion);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("descripcion", obj.descripcion);
                     cmd.Parameters.AddWithValue("activo", obj.activo);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     
 
                     oconexion.Open();
@@ -97,14 +97,14 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_EditarCategoria", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_EditarCategoria", oconexion);
                     cmd.Parameters.AddWithValue("IdCategoria", obj.idCategoria);
                     cmd.Parameters.AddWithValue("Descripcion", obj.descripcion);
                     cmd.Parameters.AddWithValue("Activo", obj.activo);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
@@ -134,12 +134,12 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_EliminarCategoria", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_EliminarCategoria", oconexion);
                     cmd.Parameters.AddWithValue("IdCategoria", id);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();

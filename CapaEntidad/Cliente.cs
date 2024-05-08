@@ -9,10 +9,11 @@ namespace CapaEntidad
     public class Cliente
     {
         public int idCliente {set; get;}
-        public string nombre { set; get;}
+        public string nombres { set; get;}
         public string apellidos { set; get;}
         public string correo { set; get;}
         public string clave { set; get;}
-        public bool reestablecer { set; get; }
+        public string ConfirmarClave { set; get; }
+        public bool restablecer { set; get; }
     }
 }

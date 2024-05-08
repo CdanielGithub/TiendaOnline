@@ -8,8 +8,16 @@ namespace CapaEntidad
 {
     public class Sector
     {
-        public int idSector {  get; set; }
-        public string nombre { get; set; }
+        public string idSector {  get; set; }
+        public string Nombre { get; set; }
         public Ciudad oCiudad { get; set; }
     }
+
+   /* public class Sector
+    {
+        public string idSector { get; set; }
+        public string Nombre { get; set; }
+        public int idCiudad { get; set; } // Cambiado a int
+    }*/
+
 }

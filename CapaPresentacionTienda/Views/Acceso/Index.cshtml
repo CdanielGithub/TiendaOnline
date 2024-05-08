@@ -1,0 +1,117 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: none;
+            text-align: center;
+            padding-top: 2rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .form-floating input {
+            border-radius: 0.5rem;
+        }
+
+        .form-floating label {
+            padding: 0.5rem;
+        }
+
+        .btn-primary {
+            border-radius: 0.5rem;
+            padding: 0.5rem 2rem;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #5d3ebc;
+            }
+
+        .footer-text {
+            color: #fff;
+        }
+
+            .footer-text a {
+                color: #f8f9fa;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="card shadow-lg">
+                    <div class="card-header">
+                        <h3 class="font-weight-bold">Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="@Url.Action("Index", "Acceso")" method="post">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" name="correo" id="txtcorreo" autocomplete="off" type="email" placeholder="name@example.com">
+                                <label for="txtcorreo">Email</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" name="clave" type="password" placeholder="Password">
+                                <label for="txtcontraseña">Contraseña</label>
+                            </div>
+
+                            <button class="btn btn-primary btn-block mb-3" type="submit">Iniciar Sesión</button>
+
+                            @{
+                                if (ViewBag.Error != null)
+                                {
+                                    <div class="form-floating mb-3">
+                                        <div class="alert alert-danger" role="alert">
+                                            @ViewBag.Error
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                            <div class="card-footer text-center py-3">
+                                <a href="@Url.Action("Reestablecer", "Acceso")" class="small footer-link">¿Has olvidado tu contraseña?</a> <br />
+                                <a href="@Url.Action("Registrar", "Acceso")" class="small footer-link">¿No tienes una cuenta? Regístrate!</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="~/Scripts/bootstrap.bundle.js"></script>
+</body>
+
+</html>

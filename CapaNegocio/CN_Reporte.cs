@@ -11,7 +11,7 @@ namespace CapaNegocio
 {
     public class CN_Reporte
     {
-        /*
+        
         private CD_Reporte objCapaDato = new CD_Reporte();
 
         public List<Reporte> Ventas(string fechainicio, string fechafin, string idtransaccion)
@@ -22,6 +22,6 @@ namespace CapaNegocio
         public DashBoard VerDashBoard()
         {
             return objCapaDato.VerDashBoard();
-        }*/
+        }
     }
 }

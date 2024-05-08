@@ -64,21 +64,27 @@
         Historial de Ventas
     </div>
     <div class="card-body">
-        <form>
+        <form action="@Url.Action("ExportarVenta", "Home")" method="post">
+
             <div class="row align-items-end">
                 <div class="col-sm-2">
                     <div class="mb-2">
                         <label class="form-label">Fecha de Inicio:</label>
-                        <input class="form-control" type="text" id="txtfechainicio" name="fechainicio" />
+                        <input class="form-control" type="date" id="txtfechainicio" name="fechainicio" />
                     </div>
                 </div>
 
                 <div class="col-sm-2">
                     <div class="mb-2">
                         <label class="form-label">Fecha Fin:</label>
-                        <input class="form-control" type="text" id="txtfechafin" name="fechafin" />
+                        <input class="form-control" type="date" id="txtfechafin" name="fechafin" />
                     </div>
                 </div>
+
+
+
+
+
 
                 <div class="col-sm-2">
                     <div class="mb-2">
@@ -103,49 +109,113 @@
             </div>
         </form>
 
-        <hr />
+            <hr />
 
-        <div class="row">
-            <div class="col-sm-12">
-                <table id="tabla" class="display cell-border" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Fecha Venta</th>
-                            <th>Cliente</th>
-                            <th>Producto</th>
-                            <th>Precio</th>
-                            <th>Cantidad</th>
-                            <th>Total</th>
-                            <th>ID Transacción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="tabla" class="display cell-border" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Fecha Venta</th>
+                                <th>Cliente</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th>ID Transacción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
         </div>
-
     </div>
-</div>
 
-@section scripts {
-    <script>
-        jQuery.ajax({
-            url: "@Url.Action("VistaDashBoard", "Home")",
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
+    @section scripts {
+        <script>
 
-                var objeto = data.resultado;
-
-                $("#totalcliente").text(objeto.TotalCliente)
-                $("#totalventa").text(objeto.TotalVenta)
-                $("#totalproducto").text(objeto.TotalProducto)
-            }
+            var tabladata;
 
 
+            document.addEventListener("DOMContentLoaded", function () {
+                // Obtener los elementos de entrada de fecha
+                var txtfechainicio = document.getElementById("txtfechainicio");
+                var txtfechafin = document.getElementById("txtfechafin");
 
-     });
-    </script>
-}
+                // Obtener la fecha actual en formato ISO (AAAA-MM-DD)
+                var fechaActual = new Date().toISOString().split('T')[0];
+
+                // Establecer la fecha actual en ambos campos de entrada de fecha
+                txtfechainicio.value = fechaActual;
+                txtfechafin.value = fechaActual;
+            });
+
+
+            jQuery.ajax({
+                url: "@Url.Action("VistaDashBoard", "Home")",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    var objeto = data.resultado;
+
+                    $("#totalcliente").text(objeto.TotalCliente)
+                    $("#totalventa").text(objeto.TotalVenta)
+                    $("#totalproducto").text(objeto.TotalProducto)
+                }
+            });
+
+
+            //tring fechainicio, string fechafin, string idtransaccion
+
+            var Url = '@Url.Action("ListaReporte", "Home")' +
+                "?fechainicio=" + $("#txtfechainicio").val() +
+                "&fechafin=" + $("#txtfechafin").val() +
+                "&idtransaccion=" + $("#txtidtransaccion").val()
+
+                //inicio--------------------------------------------------------------
+
+                            tabladata = $("#tabla").DataTable(
+                            {
+                             responsive: true,
+                             ordering: false,
+                                "ajax": {
+                                url: Url,
+                                type: "GET",
+                                dataType: "json"
+                    },
+                    columns: [
+                        { data: "fechaVenta" },
+                        { data: "cliente" },
+                        { data: "producto" },
+                        { data: "precio" },
+                        { data: "Cantidad" },
+                        { data: "Total" },
+                        { data: "idTransaccion" }
+                                ],
+                                "language": {
+                                    "url": "https://cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json"
+                                }
+
+                            });
+
+            // fin--------------------------------------------------------------------
+
+            $("#btnbuscar").on("click", function () {
+
+                 var nueva_url = '@Url.Action("ListaReporte", "Home")' +
+                 "?fechainicio=" + $("#txtfechainicio").val() +
+                 "&fechafin=" + $("#txtfechafin").val() +
+                 "&idtransaccion=" + $("#txtidtransaccion").val()
+
+
+                tabladata.ajax.url(nueva_url).load();
+            })
+
+
+        </script>
+    }

@@ -7,7 +7,7 @@ using CapaEntidad;
 
 using System.Data.SqlClient;
 using System.Data;
-using MySql.Data.MySqlClient;
+
 
 namespace CapaDatos
 {
@@ -20,18 +20,18 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
 
                 {
-                    MySqlDataReader Variable = null;
+                   // SqlDataReader Variable = null;
                     string query = "select idUsuario, nombre, apellidos, correo, clave, reestablecer, activo from usuario";
 
-                    MySqlCommand cmd = new MySqlCommand (query, oconexion);
+                    SqlCommand cmd = new SqlCommand (query, oconexion);
                     cmd.CommandType = CommandType.Text;
 
                     oconexion.Open();
 
-                    using(MySqlDataReader dr = cmd.ExecuteReader())
+                    using(SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
@@ -67,18 +67,18 @@ namespace CapaDatos
             mensaje = string .Empty;
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_RegistrarUsuario", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_RegistrarUsuario", oconexion);
                     cmd.CommandType= CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("Nombre", obj.nombre);
                     cmd.Parameters.AddWithValue("Apellidos", obj.apellidos);
                     cmd.Parameters.AddWithValue("Correo", obj.correo);
                     cmd.Parameters.AddWithValue("Clave", obj.clave);
                     cmd.Parameters.AddWithValue("Activo", obj.activo);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar,500).Direction = ParameterDirection.Output;
-                    //cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar,500).Direction = ParameterDirection.Output;
+                    cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
 
@@ -103,16 +103,16 @@ namespace CapaDatos
 
              try
              {
-                 using(MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                 using(SqlConnection oconexion = new SqlConnection(Conexion.cn))
                  {
-                     MySqlCommand cmd = new MySqlCommand("sp_EditarUsuario", oconexion);
+                     SqlCommand cmd = new SqlCommand("sp_EditarUsuario", oconexion);
                      cmd.Parameters.AddWithValue("idUsuario", obj.idUsuario);
                      cmd.Parameters.AddWithValue("Nombre", obj.nombre);
                      cmd.Parameters.AddWithValue("Apellidos", obj.apellidos);
                      cmd.Parameters.AddWithValue("Correo", obj.correo);
                      cmd.Parameters.AddWithValue("Activo", obj.activo);
-                     cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                     cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                     cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                     cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                      cmd.CommandType = CommandType.StoredProcedure;
 
                      oconexion.Open();
@@ -141,9 +141,9 @@ namespace CapaDatos
             mensaje = string.Empty;
             try
             {
-                using(MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using(SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("DELETE FROM usuario WHERE idUsuario = @id LIMIT 1", oconexion);
+                    SqlCommand cmd = new SqlCommand("DELETE top (1) FROM usuario WHERE idUsuario = @id", oconexion);
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.CommandType = CommandType.Text;
                     oconexion.Open();
@@ -157,5 +157,61 @@ namespace CapaDatos
             }
             return resultado;
         }
+
+        public bool CambiarClave(int idusuario, string nuevaclave, out string mensaje)
+        {
+            bool resultado = false;
+            mensaje = string.Empty;
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("UPDATE usuario SET clave = @nuevaclave, reestablecer = 0 WHERE idUsuario = @id", oconexion);
+
+                    
+                    cmd.Parameters.AddWithValue("@id", idusuario);
+                    cmd.Parameters.AddWithValue("@nuevaclave", nuevaclave);
+                    cmd.CommandType = CommandType.Text;
+                    oconexion.Open();
+                    resultado = cmd.ExecuteNonQuery() > 0 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                resultado = false;
+                mensaje = ex.Message;
+
+            }
+            return resultado;
+        }
+
+        public bool ReestablecerClave(int idusuario, string clave, out string mensaje)
+        {
+            bool resultado = false;
+            mensaje = string.Empty;
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("UPDATE usuario set clave = @clave, reestablecer = 1 WHERE idUsuario = @id", oconexion);
+                    cmd.Parameters.AddWithValue("@id", idusuario);
+                    cmd.Parameters.AddWithValue("@nuevaclave", clave);
+                    cmd.CommandType = CommandType.Text;
+                    oconexion.Open();
+                    resultado = cmd.ExecuteNonQuery() > 0 ? true : false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                resultado = false;
+                mensaje = ex.Message;
+
+            }
+            return resultado;
+        }
+
+
     }
 }

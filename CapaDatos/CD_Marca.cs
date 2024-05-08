@@ -5,8 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CapaEntidad;
-using MySql.Data.MySqlClient;
+using System.Data.Sql;
+using System.Data.SqlClient;
 using System.Data;
+using Org.BouncyCastle.Utilities.Zlib;
+using System.Text.RegularExpressions;
 
 namespace CapaDatos
 {
@@ -19,18 +22,18 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
 
                 {
-                    MySqlDataReader Variable = null;
+                   // SqlDataReader Variable = null;
                     string query = "select idMarca, descripcion, activo from marca";
 
-                    MySqlCommand cmd = new MySqlCommand(query, oconexion);
+                    SqlCommand cmd = new SqlCommand(query, oconexion);
                     cmd.CommandType = CommandType.Text;
 
                     oconexion.Open();
 
-                    using (MySqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
@@ -62,14 +65,14 @@ namespace CapaDatos
             mensaje = string.Empty;
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_RegistrarMarca", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_RegistrarMarca", oconexion);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("Descripcion", obj.descripcion);
                     cmd.Parameters.AddWithValue("Activo", obj.activo);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
 
 
                     oconexion.Open();
@@ -96,14 +99,14 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_EditarMarca", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_EditarMarca", oconexion);
                     cmd.Parameters.AddWithValue("IdMarca", obj.idMarca);
                     cmd.Parameters.AddWithValue("Descripcion", obj.descripcion);
                     cmd.Parameters.AddWithValue("Activo", obj.activo);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
@@ -133,12 +136,12 @@ namespace CapaDatos
 
             try
             {
-                using (MySqlConnection oconexion = new MySqlConnection(Conexion.cn))
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    MySqlCommand cmd = new MySqlCommand("sp_EliminarMarca", oconexion);
+                    SqlCommand cmd = new SqlCommand("sp_EliminarMarca", oconexion);
                     cmd.Parameters.AddWithValue("IdMarca", id);
-                    cmd.Parameters.Add("resultado", MySqlDbType.Int64).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("mensaje", MySqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
@@ -159,6 +162,61 @@ namespace CapaDatos
             }
 
             return resultado;
+        }
+
+        public List<Marca> ListarMarcaporCategoria( int idcategoria)
+        {
+
+            List<Marca> lista = new List<Marca>();
+
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+
+                {
+                    // SqlDataReader Variable = null;
+                   StringBuilder sb = new StringBuilder();
+
+                    sb.AppendLine("select distinct m.idMarca, m.descripcion from producto p");
+                    sb.AppendLine("INNER JOIN categoria c on c.idCategoria = p.idCategoria");
+                    sb.AppendLine("INNER JOIN marca m on m.idMarca = p.idMarca and m.activo = 1");
+                    sb.AppendLine("WHERE c.idCategoria = iif(@idcategoria = 0, c.idCategoria, @idcategoria)");
+
+                    //                    DECLARE @idcategoria int  = 0
+                    //
+                    //
+                    //
+                    //
+
+                    SqlCommand cmd = new SqlCommand(sb.ToString(), oconexion);
+                    cmd.Parameters.AddWithValue("@idcategoria", idcategoria);
+                    cmd.CommandType = CommandType.Text;
+
+                    oconexion.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(
+                                new Marca()
+                                {
+                                    idMarca = Convert.ToInt32(dr["idMarca"]),
+                                    descripcion = dr["Descripcion"].ToString()
+                                    
+                                }
+
+                                );
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lista = new List<Marca>();
+            }
+
+            return lista;
         }
 
         // Final
